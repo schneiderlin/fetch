@@ -1,0 +1,319 @@
+package io.github.schneiderlin.fetch.example.schoolDemo;
+
+import com.google.gson.Gson;
+import io.github.schneiderlin.fetch.BlockedRequest;
+import io.github.schneiderlin.fetch.IO;
+import io.github.schneiderlin.fetch.IORef;
+import io.github.schneiderlin.fetch.cookbook.SameBase;
+import io.github.schneiderlin.fetch.example.schoolDemo.model.Clazz;
+import io.github.schneiderlin.fetch.example.schoolDemo.model.Grade;
+import io.github.schneiderlin.fetch.example.schoolDemo.model.School;
+import io.github.schneiderlin.fetch.example.schoolDemo.model.Student;
+import io.github.schneiderlin.fetch.example.schoolDemo.request.ClassById;
+import io.github.schneiderlin.fetch.example.schoolDemo.request.GradeById;
+import io.github.schneiderlin.fetch.example.schoolDemo.request.StudentById;
+import io.vavr.Tuple2;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
+
+import java.util.Objects;
+
+public class Database {
+    private static List<School> schoolTable = List.of(
+            School.builder()
+                    .id("school1")
+                    .name("school1")
+                    .gradeIds(List.of("grade1", "grade2", "grade3"))
+                    .build()
+    );
+
+    private static List<Grade> gradeTable = List.of(
+            Grade.builder()
+                    .id("grade1")
+                    .name("grade1")
+                    .classes(List.of("class1", "class2", "class3"))
+                    .build(),
+            Grade.builder()
+                    .id("grade2")
+                    .name("grade2")
+                    .classes(List.of("class4", "class5", "class6"))
+                    .build(),
+            Grade.builder()
+                    .id("grade3")
+                    .name("grade3")
+                    .classes(List.of("class7", "class8", "class9"))
+                    .build()
+    );
+
+    private static List<Clazz> classTable = List.of(
+            Clazz.builder()
+                    .id("class1")
+                    .name("class1")
+                    .students(List.of("student1", "student2", "student3"))
+                    .build(),
+            Clazz.builder()
+                    .id("class2")
+                    .name("class2")
+                    .students(List.of("student4", "student5", "student6"))
+                    .build(),
+            Clazz.builder()
+                    .id("class3")
+                    .name("class3")
+                    .students(List.of("student7", "student8", "student9"))
+                    .build(),
+            Clazz.builder()
+                    .id("class4")
+                    .name("class4")
+                    .students(List.of("student10", "student11", "student12"))
+                    .build(),
+            Clazz.builder()
+                    .id("class5")
+                    .name("class5")
+                    .students(List.of("student13", "student14", "student15"))
+                    .build(),
+            Clazz.builder()
+                    .id("class6")
+                    .name("class6")
+                    .students(List.of("student16", "student17", "student18"))
+                    .build(),
+            Clazz.builder()
+                    .id("class7")
+                    .name("class7")
+                    .students(List.of("student19", "student20", "student21"))
+                    .build(),
+            Clazz.builder()
+                    .id("class8")
+                    .name("class8")
+                    .students(List.of("student22", "student23", "student24"))
+                    .build(),
+            Clazz.builder()
+                    .id("class9")
+                    .name("class9")
+                    .students(List.of("student25", "student26", "student27"))
+                    .build()
+    );
+
+    private static List<Student> studentTable = List.of(
+            Student.builder()
+                    .id("student1")
+                    .name("student1")
+                    .build(),
+            Student.builder()
+                    .id("student2")
+                    .name("student2")
+                    .build(),
+            Student.builder()
+                    .id("student3")
+                    .name("student3")
+                    .build(),
+            Student.builder()
+                    .id("student4")
+                    .name("student4")
+                    .build(),
+            Student.builder()
+                    .id("student5")
+                    .name("student5")
+                    .build(),
+            Student.builder()
+                    .id("student6")
+                    .name("student6")
+                    .build(),
+            Student.builder()
+                    .id("student7")
+                    .name("student7")
+                    .build(),
+            Student.builder()
+                    .id("student8")
+                    .name("student8")
+                    .build(),
+            Student.builder()
+                    .id("student9")
+                    .name("student9")
+                    .build(),
+            Student.builder()
+                    .id("student10")
+                    .name("student10")
+                    .build(),
+            Student.builder()
+                    .id("student11")
+                    .name("student11")
+                    .build(),
+            Student.builder()
+                    .id("student12")
+                    .name("student12")
+                    .build(),
+            Student.builder()
+                    .id("student13")
+                    .name("student13")
+                    .build(),
+            Student.builder()
+                    .id("student14")
+                    .name("student14")
+                    .build(),
+            Student.builder()
+                    .id("student15")
+                    .name("student15")
+                    .build(),
+            Student.builder()
+                    .id("student16")
+                    .name("student16")
+                    .build(),
+            Student.builder()
+                    .id("student17")
+                    .name("student17")
+                    .build(),
+            Student.builder()
+                    .id("student18")
+                    .name("student18")
+                    .build(),
+            Student.builder()
+                    .id("student19")
+                    .name("student19")
+                    .build(),
+            Student.builder()
+                    .id("student20")
+                    .name("student20")
+                    .build(),
+            Student.builder()
+                    .id("student21")
+                    .name("student21")
+                    .build(),
+            Student.builder()
+                    .id("student22")
+                    .name("student22")
+                    .build(),
+            Student.builder()
+                    .id("student23")
+                    .name("student23")
+                    .build(),
+            Student.builder()
+                    .id("student24")
+                    .name("student24")
+                    .build(),
+            Student.builder()
+                    .id("student25")
+                    .name("student25")
+                    .build(),
+            Student.builder()
+                    .id("student26")
+                    .name("student26")
+                    .build(),
+            Student.builder()
+                    .id("student27")
+                    .name("student27")
+                    .build()
+    );
+
+    public static School schoolById(String id) {
+        System.out.println("school by id: " + id);
+        return schoolTable.filter(x -> Objects.equals(x.getId(), id)).get(0);
+    }
+
+    public static List<School> schoolByIds(List<String> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        System.out.println("school by ids: " + ids);
+        return schoolTable.filter(x -> ids.contains(x.getId()));
+    }
+
+    public static Grade gradeById(String id) {
+        System.out.println("grade by id: " + id);
+        return gradeTable.filter(x -> Objects.equals(x.getId(), id)).get(0);
+    }
+
+    public static List<Grade> gradeByIds(List<String> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        System.out.println("grade by ids: " + ids);
+        return gradeTable.filter(x -> ids.contains(x.getId()));
+    }
+
+    public static Clazz classById(String id) {
+        System.out.println("class by id: " + id);
+        return classTable.filter(x -> Objects.equals(x.getId(), id)).get(0);
+    }
+
+    public static List<Clazz> classByIds(List<String> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        System.out.println("class by ids: " + ids);
+        return classTable.filter(x -> ids.contains(x.getId()));
+    }
+
+    public static Student studentById(String id) {
+        System.out.println("student by id: " + id);
+        return studentTable.filter(x -> Objects.equals(x.getId(), id)).get(0);
+    }
+
+    public static List<Student> studentByIds(List<String> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        System.out.println("student by ids: " + ids);
+        return studentTable.filter(x -> ids.contains(x.getId()));
+    }
+
+    public static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
+        Gson gson = new Gson();
+
+        // batch 所有的同类请求
+        List<String> gradeIds = blockedRequests
+                .filter(request -> Objects.equals(request.request.getTag(), "GradeById"))
+                .map(request -> {
+                    String json = gson.toJson(request.request);
+                    GradeById r = gson.fromJson(json, GradeById.class);
+                    return r.getId();
+                });
+        List<String> classIds = blockedRequests
+                .filter(request -> Objects.equals(request.request.getTag(), "ClassById"))
+                .map(request -> {
+                    String json = gson.toJson(request.request);
+                    ClassById r = gson.fromJson(json, ClassById.class);
+                    return r.getId();
+                });
+        List<String> studentIds = blockedRequests
+                .filter(request -> Objects.equals(request.request.getTag(), "StudentById"))
+                .map(request -> {
+                    String json = gson.toJson(request.request);
+                    StudentById r = gson.fromJson(json, StudentById.class);
+                    return r.getId();
+                });
+
+        // 实际数据库查询
+        Map<String, Grade> gradeMap = gradeByIds(gradeIds)
+                .toMap(info -> new Tuple2<>(info.getId(), info));
+        Map<String, Clazz> classMap = classByIds(classIds)
+                .toMap(info -> new Tuple2<>(info.getId(), info));
+        Map<String, Student> studentMap = studentByIds(studentIds)
+                .toMap(info -> new Tuple2<>(info.getId(), info));
+
+        return IO
+                .sequence(blockedRequests.map(request -> {
+                    if (request.request.getClass() == GradeById.class) {
+                        String json = gson.toJson(request.request);
+                        GradeById r = gson.fromJson(json, GradeById.class);
+                        return IORef.writeIORef(request.result, gradeMap.get(r.getId()).get());
+                    }
+                    if (request.request.getClass() == ClassById.class) {
+                        String json = gson.toJson(request.request);
+                        ClassById r = gson.fromJson(json, ClassById.class);
+                        return IORef.writeIORef(request.result, classMap.get(r.getId()).get());
+                    }
+                    if (request.request.getClass() == StudentById.class) {
+                        String json = gson.toJson(request.request);
+                        StudentById r = gson.fromJson(json, StudentById.class);
+                        return IORef.writeIORef(request.result, studentMap.get(r.getId()).get());
+                    }
+
+                    throw new RuntimeException("no resolver");
+                }))
+                .andThen(IO.noop());
+    }
+}

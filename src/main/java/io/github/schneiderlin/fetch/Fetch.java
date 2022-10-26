@@ -4,6 +4,8 @@ import io.vavr.*;
 import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
 
+import java.util.function.Function;
+
 @AllArgsConstructor
 public class Fetch<A> {
     private IO<Result<A>> unFetch;
@@ -82,8 +84,12 @@ public class Fetch<A> {
             return appCombine(map2F, fb, flb);
         };
 
-        Fetch<List<B>> listFetch = fbs.foldLeft(zero, foldF);
-        return listFetch;
+        return fbs.foldLeft(zero, foldF);
+    }
+
+    public static <A, B> Fetch<List<B>> concatM(List<A> as, Function1<A, Fetch<List<B>>> f) {
+        Fetch<List<List<B>>> bssFetch = mapM(as, f);
+        return bssFetch.map(bss -> bss.flatMap(bs -> bs));
     }
 
     public static <A, B> Fetch<java.util.List<B>> mapM(java.util.List<A> as, Function1<A, Fetch<B>> f) {
