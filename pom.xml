@@ -17,7 +17,7 @@
 
     <groupId>io.github.schneiderlin</groupId>
     <artifactId>fetch</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>fetch</name>
     <description>
         data fetching library for java
