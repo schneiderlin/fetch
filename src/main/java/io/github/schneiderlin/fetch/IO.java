@@ -59,6 +59,11 @@ public interface IO<T> {
                 .andThen(noop());
     }
 
+    static IO<Void> parallel(List<IO<?>> ios) {
+        ios.forEach(IO::performIO);
+        return noop();
+    }
+
     // ------ the implementations of IO<T> ------
 
     static IO<Void> print(Object s) {

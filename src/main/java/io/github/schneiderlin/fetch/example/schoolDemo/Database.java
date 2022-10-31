@@ -15,6 +15,7 @@ import io.github.schneiderlin.fetch.example.schoolDemo.request.StudentById;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
+import io.vavr.collection.Seq;
 
 import java.util.Objects;
 
@@ -260,60 +261,61 @@ public class Database {
         return studentTable.filter(x -> ids.contains(x.getId()));
     }
 
-    public static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
-        Gson gson = new Gson();
+    public static IO<Void> resolver1(List<BlockedRequest<String, Grade>> gradeRequests) {
+        List<String> gradeIds = gradeRequests
+                .map(request -> request.request.getId());
 
-        // batch 所有的同类请求
-        List<String> gradeIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "GradeById"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    GradeById r = gson.fromJson(json, GradeById.class);
-                    return r.getId();
-                });
-        List<String> classIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "ClassById"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    ClassById r = gson.fromJson(json, ClassById.class);
-                    return r.getId();
-                });
-        List<String> studentIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "StudentById"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    StudentById r = gson.fromJson(json, StudentById.class);
-                    return r.getId();
-                });
-
-        // 实际数据库查询
         Map<String, Grade> gradeMap = gradeByIds(gradeIds)
                 .toMap(info -> new Tuple2<>(info.getId(), info));
+
+        return IO
+                .sequence(gradeRequests.map(request ->
+                        IORef.writeIORef(request.result, gradeMap.get(request.request.getId()).get())))
+                .andThen(IO.noop());
+    }
+
+    public static IO<Void> resolver2(List<BlockedRequest<String, Clazz>> requests) {
+        List<String> classIds = requests
+                .map(request -> request.request.getId());
+
         Map<String, Clazz> classMap = classByIds(classIds)
                 .toMap(info -> new Tuple2<>(info.getId(), info));
+
+        return IO
+                .sequence(requests.map(request ->
+                        IORef.writeIORef(request.result, classMap.get(request.request.getId()).get())))
+                .andThen(IO.noop());
+    }
+
+    public static IO<Void> resolver3(List<BlockedRequest<String, Student>> requests) {
+        List<String> studentIds = requests
+                .map(request -> request.request.getId());
+
         Map<String, Student> studentMap = studentByIds(studentIds)
                 .toMap(info -> new Tuple2<>(info.getId(), info));
 
         return IO
-                .sequence(blockedRequests.map(request -> {
-                    if (request.request.getClass() == GradeById.class) {
-                        String json = gson.toJson(request.request);
-                        GradeById r = gson.fromJson(json, GradeById.class);
-                        return IORef.writeIORef(request.result, gradeMap.get(r.getId()).get());
-                    }
-                    if (request.request.getClass() == ClassById.class) {
-                        String json = gson.toJson(request.request);
-                        ClassById r = gson.fromJson(json, ClassById.class);
-                        return IORef.writeIORef(request.result, classMap.get(r.getId()).get());
-                    }
-                    if (request.request.getClass() == StudentById.class) {
-                        String json = gson.toJson(request.request);
-                        StudentById r = gson.fromJson(json, StudentById.class);
-                        return IORef.writeIORef(request.result, studentMap.get(r.getId()).get());
-                    }
-
-                    throw new RuntimeException("no resolver");
-                }))
+                .sequence(requests.map(request ->
+                        IORef.writeIORef(request.result, studentMap.get(request.request.getId()).get())))
                 .andThen(IO.noop());
+    }
+
+    public static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
+        Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
+        Seq<IO<?>> ios = requests.map(kv -> {
+            String key = kv._1;
+            List<BlockedRequest<Object, Object>> value = kv._2;
+            if (Objects.equals(key, "GradeById")) {
+                return resolver1((List<BlockedRequest<String, Grade>>) (Object) value);
+            }
+            if (Objects.equals(key, "ClassById")) {
+                return resolver2((List<BlockedRequest<String, Clazz>>) (Object) value);
+            }
+            if (Objects.equals(key, "StudentById")) {
+                return resolver3((List<BlockedRequest<String, Student>>) (Object) value);
+            }
+            throw new RuntimeException("no resolver");
+        });
+        return IO.parallel(ios.toList());
     }
 }
