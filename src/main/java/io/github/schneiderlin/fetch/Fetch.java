@@ -56,7 +56,7 @@ public class Fetch<A> {
                 if (rf instanceof Blocked && ra instanceof Blocked) {
                     Blocked<K, Function1<A, B>> ff_ = (Blocked) rf;
                     Blocked<K, A> fa_ = (Blocked) ra;
-                    return IO.value(new Blocked<>(fa_.blockedRequests.appendAll(ff_.blockedRequests), app(ff_.cont, fa_.cont)));
+                    return IO.value(new Blocked<>(fa_.blockedRequests.prependAll(ff_.blockedRequests), app(ff_.cont, fa_.cont)));
                 }
                 throw new RuntimeException("unreachable");
 
@@ -70,12 +70,13 @@ public class Fetch<A> {
         Fetch<List<B>> zero = unit(List.empty());
 
         Function1<B, Function1<List<B>, List<B>>> map2F =
-                b -> bs -> bs.append(b);
+                b -> bs -> bs.prepend(b);
 
         Function2<Fetch<List<B>>, Fetch<B>, Fetch<List<B>>> foldF = (flb, fb) ->
                 appCombine(map2F, fb, flb);
 
-        return fbs.foldLeft(zero, foldF);
+        return fbs.foldLeft(zero, foldF)
+                .map(List::reverse);
     }
 
     public static <A, B> Fetch<List<B>> concatM(List<A> as, Function1<A, Fetch<List<B>>> f) {
