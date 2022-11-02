@@ -1,5 +1,6 @@
 package io.github.schneiderlin.fetch;
 
+import io.github.schneiderlin.fetch.io.IO;
 import io.vavr.*;
 import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
@@ -46,13 +47,11 @@ public class Fetch<A> {
                 if (rf instanceof Done && ra instanceof Blocked) {
                     Done<Function1<A, B>> rf_ = (Done) rf;
                     Blocked<K, A> fa_ = (Blocked) ra;
-                    return IO.value(new Blocked<K, B>(fa_.blockedRequests, map(fa_.cont, rf_.a)));
+                    return IO.value(new Blocked<>(fa_.blockedRequests, map(fa_.cont, rf_.a)));
                 }
                 if (rf instanceof Blocked && ra instanceof Done) {
                     Blocked<K, Function1<A, B>> ff_ = (Blocked) rf;
-                    Done<A> ra_ = (Done) ra;
-                    //return IO.value(new Blocked<B>(ff_.blockedRequests, app(ff_.cont, unit(ra_.a))));
-                    return IO.value(new Blocked<K, B>(ff_.blockedRequests, app(ff_.cont, fa)));
+                    return IO.value(new Blocked<>(ff_.blockedRequests, app(ff_.cont, fa)));
                 }
                 if (rf instanceof Blocked && ra instanceof Blocked) {
                     Blocked<K, Function1<A, B>> ff_ = (Blocked) rf;
@@ -70,19 +69,11 @@ public class Fetch<A> {
         List<Fetch<B>> fbs = as.map(f);
         Fetch<List<B>> zero = unit(List.empty());
 
-        Function1<B, Function1<List<B>, List<B>>> map2F = b -> bs -> {
-            return bs.append(b);
-        };
+        Function1<B, Function1<List<B>, List<B>>> map2F =
+                b -> bs -> bs.append(b);
 
-        // List<Fetch<B>> 可以分解成 Fetch<B> 和 List<Fetch<B>>
-        // 可以凭空造一个 Fetch<List<B>> 出来
-        // zero 是 F<List<B>>, 所以 fold 出来的结果是 F<List<B>>
-        // current 的类型也是 F<List<B>>
-        // 因为是对 fbs 做 fold, 所以 fb 的类型是 F<B>
-        // fold left 需要输入的函数是 F<List<B>> -> F<B> -> F<List<B>>
-        Function2<Fetch<List<B>>, Fetch<B>, Fetch<List<B>>> foldF = (flb, fb) -> {
-            return appCombine(map2F, fb, flb);
-        };
+        Function2<Fetch<List<B>>, Fetch<B>, Fetch<List<B>>> foldF = (flb, fb) ->
+                appCombine(map2F, fb, flb);
 
         return fbs.foldLeft(zero, foldF);
     }

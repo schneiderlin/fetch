@@ -1,17 +1,12 @@
 package io.github.schneiderlin.fetch.example.schoolDemo;
 
-import com.google.gson.Gson;
 import io.github.schneiderlin.fetch.BlockedRequest;
-import io.github.schneiderlin.fetch.IO;
 import io.github.schneiderlin.fetch.IORef;
-import io.github.schneiderlin.fetch.cookbook.SameBase;
 import io.github.schneiderlin.fetch.example.schoolDemo.model.Clazz;
 import io.github.schneiderlin.fetch.example.schoolDemo.model.Grade;
 import io.github.schneiderlin.fetch.example.schoolDemo.model.School;
 import io.github.schneiderlin.fetch.example.schoolDemo.model.Student;
-import io.github.schneiderlin.fetch.example.schoolDemo.request.ClassById;
-import io.github.schneiderlin.fetch.example.schoolDemo.request.GradeById;
-import io.github.schneiderlin.fetch.example.schoolDemo.request.StudentById;
+import io.github.schneiderlin.fetch.io.IO;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;

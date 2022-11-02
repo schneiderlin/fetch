@@ -2,6 +2,7 @@ package io.github.schneiderlin.fetch.cookbook;
 
 import com.google.gson.Gson;
 import io.github.schneiderlin.fetch.*;
+import io.github.schneiderlin.fetch.io.IO;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
