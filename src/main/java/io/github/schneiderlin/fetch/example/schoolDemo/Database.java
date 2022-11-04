@@ -295,6 +295,19 @@ public class Database {
                 .andThen(IO.noop());
     }
 
+    public static IO<Void> resolver4(List<BlockedRequest<String, School>> requests) {
+        List<String> schoolIds = requests
+                .map(request -> request.request.getId());
+
+        Map<String, School> map = schoolByIds(schoolIds)
+                .toMap(info -> new Tuple2<>(info.getId(), info));
+
+        return IO
+                .sequence(requests.map(request ->
+                        IORef.writeIORef(request.result, map.get(request.request.getId()).get())))
+                .andThen(IO.noop());
+    }
+
     public static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
         Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
         Seq<IO<?>> ios = requests.map(kv -> {
@@ -308,6 +321,9 @@ public class Database {
             }
             if (Objects.equals(key, "StudentById")) {
                 return resolver3((List<BlockedRequest<String, Student>>) (Object) value);
+            }
+            if (Objects.equals(key, "SchoolById")) {
+                return resolver4((List<BlockedRequest<String, School>>) (Object) value);
             }
             throw new RuntimeException("no resolver");
         });
