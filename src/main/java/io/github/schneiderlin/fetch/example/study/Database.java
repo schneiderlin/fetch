@@ -7,7 +7,7 @@ import io.vavr.collection.List;
 
 public class Database {
 
-    public static List<Order> orderByIds(List<String> orderIds) {
+    public List<Order> orderByIds(List<String> orderIds) {
         return orderIds.map(oid -> {
             Order order = new Order();
             order.id = oid;
@@ -15,7 +15,7 @@ public class Database {
         });
     }
 
-    public static List<OrderDetail> detailByIds(List<String> detailIds) {
+    public List<OrderDetail> detailByIds(List<String> detailIds) {
         return null;
     }
 }

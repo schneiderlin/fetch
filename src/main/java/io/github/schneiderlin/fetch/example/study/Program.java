@@ -1,5 +1,6 @@
 package io.github.schneiderlin.fetch.example.study;
 
+import io.github.schneiderlin.fetch.FetchContext;
 import io.github.schneiderlin.fetch.Fetch;
 import io.github.schneiderlin.fetch.Request;
 import io.github.schneiderlin.fetch.example.study.model.Order;
@@ -11,7 +12,11 @@ public class Program {
     public static void main(String[] args) {
         List<String> oids = List.of("1", "2", "3", "4", "5");
         Fetch<List<Order>> orders = Fetch.mapM(oids, Program::orderFetch);
-        List<Order> os = Fetch.resolve(orders);
+
+        FetchContext fetchContext = FetchContext.empty();
+        fetchContext.addBean("database", new Database());
+
+        List<Order> os = Fetch.resolve(fetchContext, orders);
         System.out.println(os);
     }
 

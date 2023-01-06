@@ -1,12 +1,9 @@
 package io.github.schneiderlin.fetch;
 
-import io.github.schneiderlin.fetch.example.study.Program;
 import io.github.schneiderlin.fetch.io.IO;
 import io.vavr.*;
 import io.vavr.collection.List;
 import lombok.AllArgsConstructor;
-
-import java.util.function.Function;
 
 @AllArgsConstructor
 public class Fetch<A> {
@@ -174,8 +171,8 @@ public class Fetch<A> {
         });
     }
 
-    public static <A> A resolve(Fetch<A> fa) {
-        return Fetch.runFetch(Resolver::resolver, fa).performIO();
+    public static <A> A resolve(FetchContext fetchContext, Fetch<A> fa) {
+        return Fetch.runFetch(Resolver.makeResolver(fetchContext), fa).performIO();
     }
 
 }
