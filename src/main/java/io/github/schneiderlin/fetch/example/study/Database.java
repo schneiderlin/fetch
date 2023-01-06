@@ -7,7 +7,6 @@ import io.vavr.collection.List;
 
 public class Database {
 
-    // XML,
     public static List<Order> orderByIds(List<String> orderIds) {
         return orderIds.map(oid -> {
             Order order = new Order();

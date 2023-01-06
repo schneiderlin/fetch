@@ -8,21 +8,19 @@ import io.github.schneiderlin.fetch.example.study.model.Order;
 import io.github.schneiderlin.fetch.example.study.model.OrderDetail;
 import io.github.schneiderlin.fetch.example.study.request.OrderById;
 import io.github.schneiderlin.fetch.io.IO;
-import io.vavr.Tuple2;
+import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class Program {
     public static void main(String[] args) {
         // 查 10 个 order 出来
         // 每个 order, 查对应所有明细
         List<String> oids = List.of("1", "2", "3", "4", "5");
-        //List<Order> orders = oids.stream()
-        //        .map(Program::orderGet)
-        //        .collect(Collectors.toList());
         Fetch<List<Order>> orders = Fetch.mapM(oids, Program::orderFetch);
         // Fetch 是一个箱子 []
         List<Order> os = Fetch.runFetch(Program::resolver, orders).performIO();
@@ -32,26 +30,35 @@ public class Program {
     }
 
     // 参数 blockedRequests 就是任务池中所有累计的任务
-    public static IO<Void> resolver(io.vavr.collection.List<BlockedRequest<Object, Object>> blockedRequests) {
-        Map<String, io.vavr.collection.List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
+    public static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
+        Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
         Seq<IO<?>> ios = requests.map(kv -> {
             String key = kv._1;
-            io.vavr.collection.List<BlockedRequest<Object, Object>> value = kv._2;
-            if (Objects.equals(key, OrderById.class.getCanonicalName())) {
-                io.vavr.collection.List<String> orderIds = value
-                        .map(request -> (String) request.request.getId());
+            List<BlockedRequest<Object, Object>> value = kv._2;
 
-                // oid -> order
-                Map<String, Order> orderMap = Database.orderByIds(orderIds)
-                        .toMap(order -> new Tuple2<>(order.id, order));
+            // 怎么拿到一个 batchQuery
+            // 怎么根据 class name 获取 class
+            try {
+                Class clazz = Class.forName(key);
+                System.out.println(clazz);
+                List<Object> ids = value.map(request -> request.request.getId());
 
+                Method[] declaredMethods = OrderById.class.getDeclaredMethods();
+                Method method = Arrays.stream(declaredMethods).filter(m -> m.getName().equals("batchQuery")).findAny().get();
+                Map<Object, Object> map = (Map<Object, Object>) method.invoke(null, ids);
                 return IO
                         .sequence(value.map(request ->
-                                IORef.writeIORef(request.result, orderMap.get((String) request.request.getId()).get())))
+                                IORef.writeIORef(request.result, map.get(request.request.getId()).get())))
                         .andThen(IO.noop());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
             }
-            throw new RuntimeException("no resolver");
         });
+
         return IO.parallel(ios.toList());
     }
 
