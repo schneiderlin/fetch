@@ -1,5 +1,6 @@
 package io.github.schneiderlin.fetch;
 
+import io.github.schneiderlin.fetch.example.study.Program;
 import io.github.schneiderlin.fetch.io.IO;
 import io.vavr.*;
 import io.vavr.collection.List;
@@ -171,6 +172,10 @@ public class Fetch<A> {
             }
             throw new RuntimeException("unreachable");
         });
+    }
+
+    public static <A> A resolve(Fetch<A> fa) {
+        return Fetch.runFetch(Resolver::resolver, fa).performIO();
     }
 
 }
