@@ -61,8 +61,12 @@ public class Program {
                 });
     }
 
+    // 36
+
     public static void main(String[] args) {
-        example1();
+        OrderVO orderVO = runFetch(Program::resolver, program()).performIO();
+        System.out.println(orderVO);
+        //example1();
         //example2();
         //example3();
         //example4();

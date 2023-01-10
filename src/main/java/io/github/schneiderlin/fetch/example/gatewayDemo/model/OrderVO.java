@@ -20,4 +20,10 @@ public class OrderVO {
     }
 
     private List<Package> packages;
+
+    //          order
+    //        /         \
+    //   package1      packge2    ... package n
+    //       |           |             |
+    //   address1      address2       address n
 }
