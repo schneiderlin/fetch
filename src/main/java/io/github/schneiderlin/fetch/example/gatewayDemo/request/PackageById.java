@@ -1,11 +1,11 @@
 package io.github.schneiderlin.fetch.example.gatewayDemo.request;
 
-import io.github.schneiderlin.fetch.example.gatewayDemo.model.Package;
+import io.github.schneiderlin.fetch.example.gatewayDemo.model.PackageDO;
 import io.github.schneiderlin.fetch.Request;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class PackageById implements Request<Long, Package> {
+public class PackageById implements Request<Long, PackageDO> {
     public long packageId;
 
     @Override

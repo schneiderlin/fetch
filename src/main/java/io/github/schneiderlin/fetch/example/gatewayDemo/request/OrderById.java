@@ -1,11 +1,11 @@
 package io.github.schneiderlin.fetch.example.gatewayDemo.request;
 
-import io.github.schneiderlin.fetch.example.gatewayDemo.model.Order;
+import io.github.schneiderlin.fetch.example.gatewayDemo.model.OrderDO;
 import io.github.schneiderlin.fetch.Request;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class OrderById implements Request<Long, Order> {
+public class OrderById implements Request<Long, OrderDO> {
     public long orderId;
 
     @Override

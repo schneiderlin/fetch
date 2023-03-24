@@ -1,29 +1,29 @@
 package io.github.schneiderlin.fetch.example.gatewayDemo;
 
-import io.github.schneiderlin.fetch.example.gatewayDemo.model.Order;
-import io.github.schneiderlin.fetch.example.gatewayDemo.model.Package;
+import io.github.schneiderlin.fetch.example.gatewayDemo.model.OrderDO;
+import io.github.schneiderlin.fetch.example.gatewayDemo.model.PackageDO;
 import io.github.schneiderlin.fetch.example.gatewayDemo.model.Address;
 import io.vavr.collection.List;
 
 
 public class Database {
-    private static List<Order> orderTable = List.of(
-            Order.builder()
+    private static List<OrderDO> orderTable = List.of(
+            OrderDO.builder()
                     .id(1L)
                     .packageIds(List.of(2L, 3L, 4L))
                     .build()
     );
 
-    private static List<Package> packageTable = List.of(
-            Package.builder()
+    private static List<PackageDO> packageTable = List.of(
+            PackageDO.builder()
                     .id(2L)
                     .addressId(5L)
                     .build(),
-            Package.builder()
+            PackageDO.builder()
                     .id(3L)
                     .addressId(6L)
                     .build(),
-            Package.builder()
+            PackageDO.builder()
                     .id(4L)
                     .addressId(7L)
                     .build()
@@ -41,7 +41,7 @@ public class Database {
                     .build()
     );
 
-    public static List<Order> orderByIds(List<Long> ids) {
+    public static List<OrderDO> orderByIds(List<Long> ids) {
         if (ids.isEmpty()) {
             return List.of();
         }
@@ -50,7 +50,7 @@ public class Database {
         return orderTable.filter(x -> ids.contains(x.getId()));
     }
 
-    public static List<Package> packageByIds(List<Long> ids) {
+    public static List<PackageDO> packageByIds(List<Long> ids) {
         if (ids.isEmpty()) {
             return List.of();
         }

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class Order {
+public class OrderDO {
     private long id;
 
     private List<Long> packageIds;

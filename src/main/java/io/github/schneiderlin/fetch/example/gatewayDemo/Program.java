@@ -3,8 +3,8 @@ package io.github.schneiderlin.fetch.example.gatewayDemo;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import io.github.schneiderlin.fetch.BlockedRequest;
-import io.github.schneiderlin.fetch.example.gatewayDemo.model.Order;
-import io.github.schneiderlin.fetch.example.gatewayDemo.model.Package;
+import io.github.schneiderlin.fetch.example.gatewayDemo.model.OrderDO;
+import io.github.schneiderlin.fetch.example.gatewayDemo.model.PackageDO;
 import io.github.schneiderlin.fetch.example.gatewayDemo.request.OrderById;
 import io.github.schneiderlin.fetch.Fetch;
 import io.github.schneiderlin.fetch.IORef;
@@ -28,33 +28,30 @@ public class Program {
 
     private static Fetch<OrderVO> program() {
         long oid = 1;
-        // 开始构建 ast
         return orderById(oid)
-                .flatMap(order -> {
-                    List<Long> packageIds = order.getPackageIds();
-                    Fetch<List<Package>> packagesFetch = Fetch.mapM(packageIds, Program::packageById);
-                    Fetch<List<OrderVO.Package>> packageVOsFetch = packagesFetch.flatMap(packages -> {
-                        return Fetch.mapM(packages, pkg -> {
-                            long packageId = pkg.id;
-                            long addressId = pkg.addressId;
-                            Fetch<OrderVO.Address> addressFetch = addressById(addressId)
-                                    .map(address -> {
-                                        OrderVO.Address addressVO = new OrderVO.Address();
-                                        addressVO.setAddressId(address.id);
-                                        return addressVO;
-                                    });
-                            return addressFetch.map(addressVO -> {
-                                OrderVO.Package packageVO = new OrderVO.Package();
-                                packageVO.setAddress(addressVO);
-                                packageVO.setPackageId(packageId);
-                                return packageVO;
-                            });
-                        });
-                    });
+                .flatMap(orderDO -> {
+                    // 遍历 orderDO 里面的每一个 packageId, 查询 packageById
+                    Fetch<List<PackageDO>> packagesFetch = Fetch.mapM(orderDO.getPackageIds(), Program::packageById);
+                    Fetch<List<OrderVO.Package>> packageVOsFetch = packagesFetch.flatMap(packages ->
+                            Fetch.mapM(packages, pkg -> {
+                                // 每一个 package, 查询对应的 address
+                                Fetch<OrderVO.Address> addressFetch = addressById(pkg.addressId)
+                                        .map(address -> {
+                                            OrderVO.Address addressVO = new OrderVO.Address();
+                                            addressVO.setAddressId(address.id);
+                                            return addressVO;
+                                        });
+                                return addressFetch.map(addressVO -> {
+                                    OrderVO.Package packageVO = new OrderVO.Package();
+                                    packageVO.setAddress(addressVO);
+                                    packageVO.setPackageId(pkg.id);
+                                    return packageVO;
+                                });
+                            }));
 
                     return packageVOsFetch.map(packageVOs -> {
                         OrderVO vo = new OrderVO();
-                        vo.setOrderId(order.getId());
+                        vo.setOrderId(orderDO.getId());
                         vo.setPackages(packageVOs);
                         return vo;
                     });
@@ -85,7 +82,7 @@ public class Program {
         long oid = 1;
         // 调用 orderById, 传入一个 order id, 返回的是一个 Order, 但是包在 Fetch 里面
         // Fetch 可以类比 Optional 或者 Future, 对里面的 Order 做了一个封装
-        Fetch<Order> orderFetch = orderById(oid);
+        Fetch<OrderDO> orderFetch = orderById(oid);
 
         // 单纯的一个 Fetch<T> 不会执行任何查询, 程序执行到这里会直接结束
         // fetch 的核心是把 "代码描述" 和 "实际执行" 分离开
@@ -97,11 +94,11 @@ public class Program {
      */
     private static void example2() {
         long oid = 1;
-        Fetch<Order> orderFetch = orderById(oid);
+        Fetch<OrderDO> orderFetch = orderById(oid);
 
         // 实际执行
-        Order order = runFetch(Program::resolver, orderFetch).performIO();
-        System.out.println(order);
+        OrderDO orderDO = runFetch(Program::resolver, orderFetch).performIO();
+        System.out.println(orderDO);
 
         // runFetch 和 performIO 是 "实际执行" 的部分
         // 会把一个 "描述" 进行优化, 优化的过程不改变语义, 只影响性能. 优化后再执行
@@ -133,9 +130,9 @@ public class Program {
         long oid = 1;
 
         // 读取 order, 再读取 order 中的第一个 package
-        Fetch<Package> packageFetch = orderById(oid).flatMap(o -> {
+        Fetch<PackageDO> packageFetch = orderById(oid).flatMap(o -> {
             Long packageId1 = o.getPackageIds().get(0);
-            Fetch<Package> fetchPackage = packageById(packageId1);
+            Fetch<PackageDO> fetchPackage = packageById(packageId1);
             return fetchPackage;
         });
         // flatMap 可以表达有依赖关系的查询, 必须先把 order 查出来, 才知道 package id. 才能继续下一步的查询
@@ -210,7 +207,7 @@ public class Program {
      * List<A>, (A -> Fetch<B>)    ->    Fetch<List<B>>
      */
     private static void example8() {
-        Fetch<List<Package>> program = orderById(1).flatMap(o ->
+        Fetch<List<PackageDO>> program = orderById(1).flatMap(o ->
                 // 有很多个 package id, 描述怎么从一个 package id 变成 Fetch<Package>, 返回 Fetch<List<Package>>
                 mapM(o.getPackageIds(), pid -> packageById(pid))
         );
@@ -271,9 +268,9 @@ public class Program {
                 });
 
         // 实际数据库查询
-        Map<Long, Order> orderMap = Database.orderByIds(orderIds)
+        Map<Long, OrderDO> orderMap = Database.orderByIds(orderIds)
                 .toMap(x -> new Tuple2<>(x.getId(), x));
-        Map<Long, Package> packageMap = Database.packageByIds(packageIds)
+        Map<Long, PackageDO> packageMap = Database.packageByIds(packageIds)
                 .toMap(x -> new Tuple2<>(x.id, x));
         Map<Long, Address> addressMap = Database.addressByIds(addressIds)
                 .toMap(x -> new Tuple2<>(x.id, x));
@@ -299,11 +296,11 @@ public class Program {
                 .andThen(IO.noop());
     }
 
-    public static Fetch<Order> orderById(long oid) {
+    public static Fetch<OrderDO> orderById(long oid) {
         return new OrderById(oid).toFetch();
     }
 
-    public static Fetch<Package> packageById(long packageId) {
+    public static Fetch<PackageDO> packageById(long packageId) {
         return new PackageById(packageId).toFetch();
     }
 
