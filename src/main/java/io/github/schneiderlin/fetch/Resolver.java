@@ -20,8 +20,8 @@ public class Resolver {
 
                 try {
                     Class clazz = Class.forName(key);
-                    System.out.println(clazz);
-                    List<Object> ids = value.map(request -> request.request.getId());
+//                    System.out.println(clazz);
+                    List<Object> ids = value.map(request -> request.request.getId()).distinct();
 
                     Method[] declaredMethods = clazz.getDeclaredMethods();
                     Method method = Arrays.stream(declaredMethods).filter(m -> m.getName().equals("batchQuery")).findAny().get();

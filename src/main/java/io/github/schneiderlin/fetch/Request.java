@@ -5,7 +5,9 @@ public interface Request<K, A> {
         return Fetch.dataFetch(this);
     }
 
-    String getTag();
+    default String getTag() {
+        return this.getClass().getCanonicalName();
+    }
 
     K getId();
 }

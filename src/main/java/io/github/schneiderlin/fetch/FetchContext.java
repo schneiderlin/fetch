@@ -3,13 +3,18 @@ package io.github.schneiderlin.fetch;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.Map;
 
-public class FetchContext {
+public final class FetchContext {
     private Map<String, Object> beans;
 
+    private FetchContext(Map<String, Object> beans) {
+        this.beans = beans;
+    }
+
+    public static FetchContext create() {
+        return new FetchContext(HashMap.empty());
+    }
     public static FetchContext empty() {
-        FetchContext fetchContext = new FetchContext();
-        fetchContext.beans = HashMap.empty();
-        return fetchContext;
+        return new FetchContext(HashMap.empty());
     }
 
     public FetchContext addBean(String name, Object bean) {
