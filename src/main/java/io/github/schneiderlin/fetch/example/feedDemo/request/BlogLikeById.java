@@ -8,11 +8,6 @@ public class BlogLikeById implements Request<String, Integer> {
     private String blogId;
 
     @Override
-    public String getTag() {
-        return "BlogLikeById";
-    }
-
-    @Override
     public String getId() {
         return blogId;
     }

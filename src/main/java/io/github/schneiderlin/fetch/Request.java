@@ -5,7 +5,6 @@ public interface Request<K, A> {
         return Fetch.dataFetch(this);
     }
 
-    String getTag();
 
     K getId();
 }

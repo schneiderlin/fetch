@@ -27,30 +27,31 @@ public class SameBase {
 
     private static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
         // batch 所有的同类请求
-        List<Long> getInfoPIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "BaseRequest"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    BaseRequest baseRequest = gson.fromJson(json, BaseRequest.class);
-                    return baseRequest.id;
-                });
-
-
-        // 实际数据库查询
-        Map<Long, String> baseMap = baseByIds(getInfoPIds)
-                .toMap(info -> new Tuple2<>(1L, info));
-
-        return IO
-                .sequence(blockedRequests.map(request -> {
-                    if (request.request.getClass() == BaseRequest.class) {
-                        String json = gson.toJson(request.request);
-                        BaseRequest baseRequest = gson.fromJson(json, BaseRequest.class);
-                        return IORef.writeIORef(request.result, baseMap.get(baseRequest.id).get());
-                    }
-
-                    throw new RuntimeException("no resolver");
-                }))
-                .andThen(IO.noop());
+//        List<Long> getInfoPIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "BaseRequest"))
+//                .map(request -> {
+//                    String json = gson.toJson(request.request);
+//                    BaseRequest baseRequest = gson.fromJson(json, BaseRequest.class);
+//                    return baseRequest.id;
+//                });
+//
+//
+//        // 实际数据库查询
+//        Map<Long, String> baseMap = baseByIds(getInfoPIds)
+//                .toMap(info -> new Tuple2<>(1L, info));
+//
+//        return IO
+//                .sequence(blockedRequests.map(request -> {
+//                    if (request.request.getClass() == BaseRequest.class) {
+//                        String json = gson.toJson(request.request);
+//                        BaseRequest baseRequest = gson.fromJson(json, BaseRequest.class);
+//                        return IORef.writeIORef(request.result, baseMap.get(baseRequest.id).get());
+//                    }
+//
+//                    throw new RuntimeException("no resolver");
+//                }))
+//                .andThen(IO.noop());
+        return null;
     }
 
     private static List<String> baseByIds(List<Long> ids) {
@@ -70,11 +71,6 @@ public class SameBase {
     private static class BaseRequest implements Request<Long, String> {
 
         private long id;
-
-        @Override
-        public String getTag() {
-            return "BaseRequest";
-        }
 
         @Override
         public Long getId() {

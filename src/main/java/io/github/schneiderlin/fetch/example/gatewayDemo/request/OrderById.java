@@ -12,9 +12,4 @@ public class OrderById implements Request<Long, OrderDO> {
     public Long getId() {
         return orderId;
     }
-
-    @Override
-    public String getTag() {
-        return "OrderById";
-    }
 }

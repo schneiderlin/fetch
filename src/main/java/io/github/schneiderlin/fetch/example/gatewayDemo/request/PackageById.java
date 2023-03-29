@@ -9,11 +9,6 @@ public class PackageById implements Request<Long, PackageDO> {
     public long packageId;
 
     @Override
-    public String getTag() {
-        return "PackageById";
-    }
-
-    @Override
     public Long getId() {
         return packageId;
     }

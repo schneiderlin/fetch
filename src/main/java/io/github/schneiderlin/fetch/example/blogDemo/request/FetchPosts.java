@@ -7,9 +7,4 @@ public class FetchPosts implements Request<Object, List<Long>> {
     public Object getId() {
         return null;
     }
-
-    @Override
-    public String getTag() {
-        return "FetchPosts";
-    }
 }

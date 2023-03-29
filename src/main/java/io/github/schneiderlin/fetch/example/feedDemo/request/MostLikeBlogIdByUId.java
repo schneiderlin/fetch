@@ -7,10 +7,6 @@ import lombok.AllArgsConstructor;
 public class MostLikeBlogIdByUId implements Request<String, String> {
     private String uid;
 
-    @Override
-    public String getTag() {
-        return "MostLikeBlogIdByUId";
-    }
 
     @Override
     public String getId() {

@@ -248,52 +248,53 @@ public class Program {
 
     private static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
         // batch 所有的同类请求
-        List<Long> orderIds = blockedRequests.filter(request -> Objects.equals(request.request.getTag(), "OrderById"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    OrderById r = gson.fromJson(json, OrderById.class);
-                    return r.orderId;
-                });
-        List<Long> packageIds = blockedRequests.filter(request -> Objects.equals(request.request.getTag(), "PackageById"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    PackageById r = gson.fromJson(json, PackageById.class);
-                    return r.packageId;
-                });
-        List<Long> addressIds = blockedRequests.filter(request -> Objects.equals(request.request.getTag(), "AddressById"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    AddressById r = gson.fromJson(json, AddressById.class);
-                    return r.addressId;
-                });
-
-        // 实际数据库查询
-        Map<Long, OrderDO> orderMap = Database.orderByIds(orderIds)
-                .toMap(x -> new Tuple2<>(x.getId(), x));
-        Map<Long, PackageDO> packageMap = Database.packageByIds(packageIds)
-                .toMap(x -> new Tuple2<>(x.id, x));
-        Map<Long, Address> addressMap = Database.addressByIds(addressIds)
-                .toMap(x -> new Tuple2<>(x.id, x));
-
-        return IO
-                .sequence(blockedRequests.map(request -> {
-                    if (Objects.equals(request.request.getTag(), "OrderById")) {
-                        String json = gson.toJson(request.request);
-                        OrderById r = gson.fromJson(json, OrderById.class);
-                        return IORef.writeIORef(request.result, orderMap.get(r.orderId).get());
-                    } else if (Objects.equals(request.request.getTag(), "PackageById")) {
-                        String json = gson.toJson(request.request);
-                        PackageById r = gson.fromJson(json, PackageById.class);
-                        return IORef.writeIORef(request.result, packageMap.get(r.packageId).get());
-                    } else if (Objects.equals(request.request.getTag(), "AddressById")) {
-                        String json = gson.toJson(request.request);
-                        AddressById r = gson.fromJson(json, AddressById.class);
-                        return IORef.writeIORef(request.result, addressMap.get(r.addressId).get());
-                    }
-
-                    throw new RuntimeException("no resolver");
-                }))
-                .andThen(IO.noop());
+//        List<Long> orderIds = blockedRequests.filter(request -> Objects.equals(request.request.getTag(), "OrderById"))
+//                .map(request -> {
+//                    String json = gson.toJson(request.request);
+//                    OrderById r = gson.fromJson(json, OrderById.class);
+//                    return r.orderId;
+//                });
+//        List<Long> packageIds = blockedRequests.filter(request -> Objects.equals(request.request.getTag(), "PackageById"))
+//                .map(request -> {
+//                    String json = gson.toJson(request.request);
+//                    PackageById r = gson.fromJson(json, PackageById.class);
+//                    return r.packageId;
+//                });
+//        List<Long> addressIds = blockedRequests.filter(request -> Objects.equals(request.request.getTag(), "AddressById"))
+//                .map(request -> {
+//                    String json = gson.toJson(request.request);
+//                    AddressById r = gson.fromJson(json, AddressById.class);
+//                    return r.addressId;
+//                });
+//
+//        // 实际数据库查询
+//        Map<Long, OrderDO> orderMap = Database.orderByIds(orderIds)
+//                .toMap(x -> new Tuple2<>(x.getId(), x));
+//        Map<Long, PackageDO> packageMap = Database.packageByIds(packageIds)
+//                .toMap(x -> new Tuple2<>(x.id, x));
+//        Map<Long, Address> addressMap = Database.addressByIds(addressIds)
+//                .toMap(x -> new Tuple2<>(x.id, x));
+//
+//        return IO
+//                .sequence(blockedRequests.map(request -> {
+//                    if (Objects.equals(request.request.getTag(), "OrderById")) {
+//                        String json = gson.toJson(request.request);
+//                        OrderById r = gson.fromJson(json, OrderById.class);
+//                        return IORef.writeIORef(request.result, orderMap.get(r.orderId).get());
+//                    } else if (Objects.equals(request.request.getTag(), "PackageById")) {
+//                        String json = gson.toJson(request.request);
+//                        PackageById r = gson.fromJson(json, PackageById.class);
+//                        return IORef.writeIORef(request.result, packageMap.get(r.packageId).get());
+//                    } else if (Objects.equals(request.request.getTag(), "AddressById")) {
+//                        String json = gson.toJson(request.request);
+//                        AddressById r = gson.fromJson(json, AddressById.class);
+//                        return IORef.writeIORef(request.result, addressMap.get(r.addressId).get());
+//                    }
+//
+//                    throw new RuntimeException("no resolver");
+//                }))
+//                .andThen(IO.noop());
+        return null;
     }
 
     public static Fetch<OrderDO> orderById(long oid) {

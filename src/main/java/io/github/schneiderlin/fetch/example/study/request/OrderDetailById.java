@@ -17,11 +17,6 @@ public class OrderDetailById implements Request<String, OrderDetail> {
     }
 
     @Override
-    public String getTag() {
-        return OrderDetailById.class.getCanonicalName();
-    }
-
-    @Override
     public String getId() {
         return detailId;
     }

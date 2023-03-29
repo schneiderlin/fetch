@@ -10,11 +10,6 @@ public class StudentById implements Request<String, Student> {
     private String id;
 
     @Override
-    public String getTag() {
-        return "StudentById";
-    }
-
-    @Override
     public String getId() {
         return id;
     }

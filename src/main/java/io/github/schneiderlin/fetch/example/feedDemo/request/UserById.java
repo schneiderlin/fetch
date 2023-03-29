@@ -9,11 +9,6 @@ public class UserById implements Request<String, UserTable> {
     private String uid;
 
     @Override
-    public String getTag() {
-        return "UserById";
-    }
-
-    @Override
     public String getId() {
         return uid;
     }

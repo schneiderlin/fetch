@@ -32,45 +32,46 @@ public class Program {
 
     private static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
         // batch 所有的同类请求
-        List<Long> getInfoPIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "FetchPostInfo"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    FetchPostInfo fetchPostInfo = gson.fromJson(json, FetchPostInfo.class);
-                    return fetchPostInfo.postId;
-                });
-
-        List<Long> getContentPIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "FetchPostContent"))
-                .map(request -> {
-                    String json = gson.toJson(request.request);
-                    FetchPostContent fetchPostContent = gson.fromJson(json, FetchPostContent.class);
-                    return fetchPostContent.postId;
-                });
-
-        // 实际数据库查询
-        Map<Long, PostInfo> postInfos = Database.getInfoByIds(getInfoPIds)
-                .toMap(info -> new Tuple2<>(info.id, info));
-        Map<Long, PostContent> postContents = Database.getContentByIds(getContentPIds)
-                .toMap(content -> new Tuple2<>(content.id, content));
-
-        return IO
-                .sequence(blockedRequests.map(request -> {
-                    if (request.request.getClass() == FetchPosts.class) {
-                        return IORef.writeIORef(request.result, Database.getPostIds());
-                    } else if (request.request.getClass() == FetchPostInfo.class) {
-                        String json = gson.toJson(request.request);
-                        FetchPostInfo fetchPostInfo = gson.fromJson(json, FetchPostInfo.class);
-                        return IORef.writeIORef(request.result, postInfos.get(fetchPostInfo.postId).get());
-                    } else if (request.request.getClass() == FetchPostContent.class) {
-                        String json = gson.toJson(request.request);
-                        FetchPostContent fetchPostContent = gson.fromJson(json, FetchPostContent.class);
-                        return IORef.writeIORef(request.result, postContents.get(fetchPostContent.postId).get());
-                    }
-
-                    throw new RuntimeException("no resolver");
-                }))
-                .andThen(IO.noop());
+//        List<Long> getInfoPIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getClass().getCanonicalName(), FetchPostInfo.class.getCanonicalName()))
+//                .map(request -> {
+//                    String json = gson.toJson(request.request);
+//                    FetchPostInfo fetchPostInfo = gson.fromJson(json, FetchPostInfo.class);
+//                    return fetchPostInfo.postId;
+//                });
+//
+//        List<Long> getContentPIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getClass().getCanonicalName(), FetchPostContent.class.getCanonicalName()))
+//                .map(request -> {
+//                    String json = gson.toJson(request.request);
+//                    FetchPostContent fetchPostContent = gson.fromJson(json, FetchPostContent.class);
+//                    return fetchPostContent.postId;
+//                });
+//
+//        // 实际数据库查询
+//        Map<Long, PostInfo> postInfos = Database.getInfoByIds(getInfoPIds)
+//                .toMap(info -> new Tuple2<>(info.id, info));
+//        Map<Long, PostContent> postContents = Database.getContentByIds(getContentPIds)
+//                .toMap(content -> new Tuple2<>(content.id, content));
+//
+//        return IO
+//                .sequence(blockedRequests.map(request -> {
+//                    if (request.request.getClass() == FetchPosts.class) {
+//                        return IORef.writeIORef(request.result, Database.getPostIds());
+//                    } else if (request.request.getClass() == FetchPostInfo.class) {
+//                        String json = gson.toJson(request.request);
+//                        FetchPostInfo fetchPostInfo = gson.fromJson(json, FetchPostInfo.class);
+//                        return IORef.writeIORef(request.result, postInfos.get(fetchPostInfo.postId).get());
+//                    } else if (request.request.getClass() == FetchPostContent.class) {
+//                        String json = gson.toJson(request.request);
+//                        FetchPostContent fetchPostContent = gson.fromJson(json, FetchPostContent.class);
+//                        return IORef.writeIORef(request.result, postContents.get(fetchPostContent.postId).get());
+//                    }
+//
+//                    throw new RuntimeException("no resolver");
+//                }))
+//                .andThen(IO.noop());
+        return null;
     }
 
     // 业务逻辑
@@ -116,7 +117,7 @@ public class Program {
     }
 
     private static Fetch<List<PostInfo>> getAllPostsInfo() {
-        return getPostIds().flatMap(postIds -> mapM(postIds, id -> getPostInfo(id)));
+        return getPostIds().flatMap(postIds -> mapM(postIds, Program::getPostInfo));
     }
 
     private static Fetch<PostContent> getPostContent(long postId) {

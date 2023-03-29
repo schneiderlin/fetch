@@ -10,11 +10,6 @@ public class BlogIdsByUId implements Request<String, List<String>> {
     private String uid;
 
     @Override
-    public String getTag() {
-        return "BlogIdsByUId";
-    }
-
-    @Override
     public String getId() {
         return uid;
     }

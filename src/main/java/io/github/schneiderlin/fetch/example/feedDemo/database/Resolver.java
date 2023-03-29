@@ -116,63 +116,64 @@ public class Resolver {
 
     public IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
         // batch 所有的同类请求
-        List<String> blogByIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "BlogById"))
-                .map(request -> (String) request.request.getId());
-        List<String> blogIdsByUIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "BlogIdsByUId"))
-                .map(request -> (String) request.request.getId());
-        List<String> blogLikeByIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "BlogLikeById"))
-                .map(request -> (String) request.request.getId());
-        List<String> blogViewByIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "BlogViewById"))
-                .map(request -> (String) request.request.getId());
-        List<String> mostLikeBlogIdByUIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "MostLikeBlogIdByUId"))
-                .map(request -> (String) request.request.getId());
-        List<String> mostRecentBlogIdByUIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "MostRecentBlogIdByUId"))
-                .map(request -> (String) request.request.getId());
-        List<String> reviewsByBlogIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "ReviewsByBlogId"))
-                .map(request -> (String) request.request.getId());
-        List<String> userByIds = blockedRequests
-                .filter(request -> Objects.equals(request.request.getTag(), "UserById"))
-                .map(request -> (String) request.request.getId());
-
-        // 实际数据库查询
-        Map<String, BlogTable> blogByIdsMap = getBlogByIds(blogByIds);
-        Map<String, List<String>> blogIdsByUIdsMap = getBlogIdsByUIds(blogIdsByUIds);
-        Map<String, Integer> blogLikeByIdsMap = getBlogLikeByIds(blogLikeByIds);
-        Map<String, Integer> blogViewByIdsMap = getBlogViewByIds(blogViewByIds);
-        Map<String, String> mostLikeBlogIdByUIdsMap = getMostLikeBlogIdByUIds(mostLikeBlogIdByUIds);
-        Map<String, String> mostRecentBlogIdByUIdsMap = getMostRecentBlogIdByUIds(mostRecentBlogIdByUIds);
-        Map<String, List<ReviewTable>> reviewsByBlogIdsMap = getReviewsByBlogIds(reviewsByBlogIds);
-        Map<String, UserTable> userByIdsMap = getUserByIds(userByIds);
-
-        return IO
-                .sequence(blockedRequests.map(request -> {
-                    if (request.request.getClass() == BlogById.class) {
-                        return IORef.writeIORef(request.result, blogByIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == BlogIdsByUId.class) {
-                        return IORef.writeIORef(request.result, blogIdsByUIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == BlogLikeById.class) {
-                        return IORef.writeIORef(request.result, blogLikeByIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == BlogViewById.class) {
-                        return IORef.writeIORef(request.result, blogViewByIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == MostLikeBlogIdByUId.class) {
-                        return IORef.writeIORef(request.result, mostLikeBlogIdByUIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == MostRecentBlogIdByUId.class) {
-                        return IORef.writeIORef(request.result, mostRecentBlogIdByUIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == ReviewsByBlogId.class) {
-                        return IORef.writeIORef(request.result, reviewsByBlogIdsMap.get((String) request.request.getId()).get());
-                    } else if (request.request.getClass() == UserById.class) {
-                        return IORef.writeIORef(request.result, userByIdsMap.get((String) request.request.getId()).get());
-                    }
-
-                    throw new RuntimeException("no resolver");
-                }))
-                .andThen(IO.noop());
+//        List<String> blogByIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "BlogById"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> blogIdsByUIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "BlogIdsByUId"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> blogLikeByIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "BlogLikeById"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> blogViewByIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "BlogViewById"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> mostLikeBlogIdByUIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "MostLikeBlogIdByUId"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> mostRecentBlogIdByUIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "MostRecentBlogIdByUId"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> reviewsByBlogIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "ReviewsByBlogId"))
+//                .map(request -> (String) request.request.getId());
+//        List<String> userByIds = blockedRequests
+//                .filter(request -> Objects.equals(request.request.getTag(), "UserById"))
+//                .map(request -> (String) request.request.getId());
+//
+//        // 实际数据库查询
+//        Map<String, BlogTable> blogByIdsMap = getBlogByIds(blogByIds);
+//        Map<String, List<String>> blogIdsByUIdsMap = getBlogIdsByUIds(blogIdsByUIds);
+//        Map<String, Integer> blogLikeByIdsMap = getBlogLikeByIds(blogLikeByIds);
+//        Map<String, Integer> blogViewByIdsMap = getBlogViewByIds(blogViewByIds);
+//        Map<String, String> mostLikeBlogIdByUIdsMap = getMostLikeBlogIdByUIds(mostLikeBlogIdByUIds);
+//        Map<String, String> mostRecentBlogIdByUIdsMap = getMostRecentBlogIdByUIds(mostRecentBlogIdByUIds);
+//        Map<String, List<ReviewTable>> reviewsByBlogIdsMap = getReviewsByBlogIds(reviewsByBlogIds);
+//        Map<String, UserTable> userByIdsMap = getUserByIds(userByIds);
+//
+//        return IO
+//                .sequence(blockedRequests.map(request -> {
+//                    if (request.request.getClass() == BlogById.class) {
+//                        return IORef.writeIORef(request.result, blogByIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == BlogIdsByUId.class) {
+//                        return IORef.writeIORef(request.result, blogIdsByUIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == BlogLikeById.class) {
+//                        return IORef.writeIORef(request.result, blogLikeByIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == BlogViewById.class) {
+//                        return IORef.writeIORef(request.result, blogViewByIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == MostLikeBlogIdByUId.class) {
+//                        return IORef.writeIORef(request.result, mostLikeBlogIdByUIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == MostRecentBlogIdByUId.class) {
+//                        return IORef.writeIORef(request.result, mostRecentBlogIdByUIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == ReviewsByBlogId.class) {
+//                        return IORef.writeIORef(request.result, reviewsByBlogIdsMap.get((String) request.request.getId()).get());
+//                    } else if (request.request.getClass() == UserById.class) {
+//                        return IORef.writeIORef(request.result, userByIdsMap.get((String) request.request.getId()).get());
+//                    }
+//
+//                    throw new RuntimeException("no resolver");
+//                }))
+//                .andThen(IO.noop());
+        return null;
     }
 }

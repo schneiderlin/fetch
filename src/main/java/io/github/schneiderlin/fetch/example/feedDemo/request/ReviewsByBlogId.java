@@ -11,11 +11,6 @@ public class ReviewsByBlogId implements Request<String, List<ReviewTable>> {
     private String blogId;
 
     @Override
-    public String getTag() {
-        return "ReviewsByBlogId";
-    }
-
-    @Override
     public String getId() {
         return blogId;
     }

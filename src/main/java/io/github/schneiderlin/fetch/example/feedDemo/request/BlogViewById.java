@@ -8,11 +8,6 @@ public class BlogViewById implements Request<String, Integer> {
     private String blogId;
 
     @Override
-    public String getTag() {
-        return "BlogViewById";
-    }
-
-    @Override
     public String getId() {
         return blogId;
     }
