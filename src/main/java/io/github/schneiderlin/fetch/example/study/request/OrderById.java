@@ -16,10 +16,6 @@ public class OrderById implements Request<String, Order> {
         this.oid = oid;
     }
 
-    @Override
-    public String getTag() {
-        return OrderById.class.getCanonicalName();
-    }
 
     @Override
     public String getId() {

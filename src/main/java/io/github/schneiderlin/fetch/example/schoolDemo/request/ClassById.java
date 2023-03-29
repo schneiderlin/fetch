@@ -12,11 +12,6 @@ public class ClassById implements Request<String, Clazz> {
     private String id;
 
     @Override
-    public String getTag() {
-        return "ClassById";
-    }
-
-    @Override
     public String getId() {
         return id;
     }

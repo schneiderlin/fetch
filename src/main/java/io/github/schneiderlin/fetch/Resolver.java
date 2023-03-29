@@ -13,14 +13,13 @@ import java.util.Arrays;
 public class Resolver {
     public static Function1<List<BlockedRequest<Object, Object>>, IO<Void>> makeResolver(FetchContext fetchContext) {
         return blockedRequests -> {
-            Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
+            Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getClass().getCanonicalName());
             Seq<IO<?>> ios = requests.map(kv -> {
                 String key = kv._1;
                 List<BlockedRequest<Object, Object>> value = kv._2;
 
                 try {
                     Class clazz = Class.forName(key);
-//                    System.out.println(clazz);
                     List<Object> ids = value.map(request -> request.request.getId()).distinct();
 
                     Method[] declaredMethods = clazz.getDeclaredMethods();

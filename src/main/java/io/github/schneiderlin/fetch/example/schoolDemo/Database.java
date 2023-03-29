@@ -309,24 +309,25 @@ public class Database {
     }
 
     public static IO<Void> resolver(List<BlockedRequest<Object, Object>> blockedRequests) {
-        Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
-        Seq<IO<?>> ios = requests.map(kv -> {
-            String key = kv._1;
-            List<BlockedRequest<Object, Object>> value = kv._2;
-            if (Objects.equals(key, "GradeById")) {
-                return resolver1((List<BlockedRequest<String, Grade>>) (Object) value);
-            }
-            if (Objects.equals(key, "ClassById")) {
-                return resolver2((List<BlockedRequest<String, Clazz>>) (Object) value);
-            }
-            if (Objects.equals(key, "StudentById")) {
-                return resolver3((List<BlockedRequest<String, Student>>) (Object) value);
-            }
-            if (Objects.equals(key, "SchoolById")) {
-                return resolver4((List<BlockedRequest<String, School>>) (Object) value);
-            }
-            throw new RuntimeException("no resolver");
-        });
-        return IO.parallel(ios.toList());
+//        Map<String, List<BlockedRequest<Object, Object>>> requests = blockedRequests.groupBy(r -> r.request.getTag());
+//        Seq<IO<?>> ios = requests.map(kv -> {
+//            String key = kv._1;
+//            List<BlockedRequest<Object, Object>> value = kv._2;
+//            if (Objects.equals(key, "GradeById")) {
+//                return resolver1((List<BlockedRequest<String, Grade>>) (Object) value);
+//            }
+//            if (Objects.equals(key, "ClassById")) {
+//                return resolver2((List<BlockedRequest<String, Clazz>>) (Object) value);
+//            }
+//            if (Objects.equals(key, "StudentById")) {
+//                return resolver3((List<BlockedRequest<String, Student>>) (Object) value);
+//            }
+//            if (Objects.equals(key, "SchoolById")) {
+//                return resolver4((List<BlockedRequest<String, School>>) (Object) value);
+//            }
+//            throw new RuntimeException("no resolver");
+//        });
+//        return IO.parallel(ios.toList());
+        return null;
     }
 }

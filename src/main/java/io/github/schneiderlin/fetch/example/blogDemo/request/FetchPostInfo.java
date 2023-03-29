@@ -9,11 +9,6 @@ public class FetchPostInfo implements Request<Long, PostInfo> {
     public long postId;
 
     @Override
-    public String getTag() {
-        return "FetchPostInfo";
-    }
-
-    @Override
     public Long getId() {
         return postId;
     }

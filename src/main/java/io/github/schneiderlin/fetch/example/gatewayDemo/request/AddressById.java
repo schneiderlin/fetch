@@ -8,10 +8,6 @@ import lombok.AllArgsConstructor;
 public class AddressById implements Request<Long, Address> {
     public long addressId;
 
-    @Override
-    public String getTag() {
-        return "AddressById";
-    }
 
     @Override
     public Long getId() {

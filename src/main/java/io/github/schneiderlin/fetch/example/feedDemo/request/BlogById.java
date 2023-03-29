@@ -8,10 +8,6 @@ import lombok.AllArgsConstructor;
 public class BlogById implements Request<String, BlogTable> {
     private String blogId;
 
-    @Override
-    public String getTag() {
-        return "BlogById";
-    }
 
     @Override
     public String getId() {
