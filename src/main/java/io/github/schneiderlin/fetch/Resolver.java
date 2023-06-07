@@ -50,14 +50,4 @@ public class Resolver {
             return IO.parallel(ios.toList());
         };
     }
-
-    public static void main(String[] args) {
-        Method method = Resolver.class.getMethods()[2];
-        Class<?> parameterType = method.getParameterTypes()[0];
-        System.out.println(parameterType == List.class);
-    }
-
-    public void foo(java.util.List<Integer> l) {
-
-    }
 }
